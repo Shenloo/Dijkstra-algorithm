@@ -19,10 +19,11 @@ class Krawedz
 public:
 	Krawedz() 
 	{
-		pole_krawedzi = 0; pozycja = nullptr; poprzedni = nullptr; nastepny = nullptr;
+		pole_krawedzi = 0; pozycja = nullptr; 
+		poprzedni = nullptr; nastepny = nullptr;
 		pierwszy = nullptr; drugi = nullptr;
 	}
-	~Krawedz() {  }
+	~Krawedz() { }
 	void UstawPozycje(Wezel<Krawedz>* w) { pozycja = w; }                    // ustawia referencje do pozycji w liscie krawedzi
 	void UstawPole(int k) { pole_krawedzi = k; }                             // ustawia pole krawedzi
 	void UstawIncydencje(Wezel<Krawedz>* w1, Wezel<Krawedz>* w2)             // ustawia referencje do pozycji w liscie krawedzi incydentnych

@@ -70,5 +70,11 @@ int main()
 	delete GL;
 	delete GM;
 
+	Kolejka<Wierzcholek<Krawedz>>* d = new Kolejka<Wierzcholek<Krawedz>>;
+	int droga[11] = { 2,3,5,1,2,3,7,4,6,3,5 };
+
+	for (int i = 0; i < liczba_wierzcholkow; ++i)
+		d->Dodaj(w1[i], droga[i]);
+
 
 }

@@ -11,8 +11,8 @@ class Lista
 	Wezel<E>* poczatek;                                                       // wskaznik na pierwszy element
 	Wezel<E>* koniec;                                                        // wskaznik na ostatni element
 public:
-	Lista() { rozmiar = 0; poczatek = nullptr; koniec = nullptr; } // konstruktor
-	~Lista() { while (!Pusta()) UsunPoczatek(); } // destruktor
+	Lista() { rozmiar = 0; poczatek = nullptr; koniec = nullptr; }            // konstruktor
+	~Lista() { while (!Pusta()) UsunPoczatek(); }                             // destruktor
 	bool Pusta() { if (rozmiar == 0) return true; else return false; }        // sprawdza, czy lista jest pusta
 	int Rozmiar() { return rozmiar; }                                         // zwraca rozmiar listy
 	Wezel<E>* Koniec() { if (!Pusta()) return koniec; else return nullptr; }    // zwraca wskaünik na ostatni element listy

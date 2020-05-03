@@ -11,17 +11,29 @@ class GrafMacierz
 {
 	Lista<Krawedz> krawedzie;
 	Lista<Wierzcholek<Krawedz>> wierzcholki;
-	Krawedz* macierz[MAX][MAX];
+	Krawedz*** macierz;
 public:
 	GrafMacierz() 
 	{ 
+		macierz = new Krawedz ** [MAX];
+		for (int i = 0; i < MAX; ++i)
+			macierz[i] = new Krawedz * [MAX];
 		for (int i = 0; i < MAX; ++i)
 			for (int j = 0; j < MAX; ++j)
 				macierz[i][j] = nullptr;
 	}
-	~GrafMacierz() {}
-	int Wierzcholki() { return wierzcholki.Rozmiar(); }
-	int Krawedzie() { return krawedzie.Rozmiar(); }
+	~GrafMacierz() 
+	{
+		for (int i = 0; i < MAX; ++i)
+		{
+			delete[] macierz[i];
+		}
+		delete [] macierz;
+		krawedzie.~Lista();
+		wierzcholki.~Lista();
+	}
+	Lista<Wierzcholek<Krawedz>>* Wierzcholki() { Lista<Wierzcholek<Krawedz>>* w = &wierzcholki; return w; }
+	Lista<Krawedz>* Krawedzie() { Lista<Krawedz>* w = &krawedzie; return w; }
 	void DodajWierzcholek(Wierzcholek<Krawedz>* w,int pole)
 	{
 		wierzcholki.DodajKoniec(w);
@@ -36,8 +48,8 @@ public:
 		k->UstawPole(pole);
 		k->UstawPozycje(krawedzie.Koniec());
 		k->UstawWierzcholki(poprzedni, nastepny);
-		macierz[poprzedni->WezKlucz()][nastepny->WezKlucz()] = k;
-		macierz[nastepny->WezKlucz()][poprzedni->WezKlucz()] = k;
+		macierz[poprzedni->PoleWierzcholka()][nastepny->PoleWierzcholka()] = k;
+		macierz[nastepny->PoleWierzcholka()][poprzedni->PoleWierzcholka()] = k;
 	}
 	Wierzcholek<Krawedz>* Przeciwlegly(Wierzcholek<Krawedz>* w, Krawedz* k)
 	{
@@ -59,8 +71,8 @@ public:
 	{
 		Lista<Krawedz>* l = new Lista<Krawedz>;
 		for (int i = 0; i < MAX; ++i)
-			if (macierz[w->WezKlucz()][i] != nullptr)
-				l->DodajKoniec(macierz[w->WezKlucz()][i]);
+			if (macierz[w->PoleWierzcholka()][i] != nullptr)
+				l->DodajKoniec(macierz[w->PoleWierzcholka()][i]);
 		return l;
 	}
 };

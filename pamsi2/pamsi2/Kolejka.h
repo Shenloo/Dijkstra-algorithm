@@ -1,6 +1,8 @@
 #pragma once
 #include<iostream>
 #include"Wezel.h"
+#include"Wierzcholek.h"
+#include"Krawedz.h"
 
 using namespace std;
 
@@ -12,10 +14,18 @@ class Kolejka
 	Wezel<E>* ostatni;
 public:
 	Kolejka() { rozmiar = 0; korzen = nullptr; ostatni = nullptr; }
-	~Kolejka() { }
+	~Kolejka() { while (!Pusta()) delete UsunMin(); }
 	Wezel<E>* Korzen() { return korzen; }
-	bool Pusta() { if (korzen == nullptr) return true; else return false; }
-	void ZmienKlucz(Wezel<E>* w, int k) { w->UstawKlucz(k); }
+	int Rozmiar() { return rozmiar; }
+	bool Pusta() { if (rozmiar == 0) return true; else return false; }
+	void ZmienKlucz(Wezel<E>* w, int k)
+	{ 
+		if (w != nullptr)
+		{
+			w->UstawKlucz(k);
+				wGore(w);
+		}
+	}
 	void wGore(Wezel<E>* w)                                                                // przesuwa elementy z mniejszym kluczem w gore
 	{
 		if (w->WezKlucz() < w->WezOjca()->WezKlucz() && w == ostatni)
@@ -48,9 +58,6 @@ public:
 				pom->UstawOjca(w);
 				if (w->WezPoprzedni() != nullptr)
 					w->WezPoprzedni()->UstawOjca(w);
-
-				if (w->WezNastepny() != nullptr) cout << w->WezNastepny()->WezKlucz() << endl;
-				else cout << "-" << endl;
 			}
 			else if (w->WezOjca()->WezPoprzedni() == w)                            // jesli wezel jest lewym synem 
 			{
@@ -74,11 +81,7 @@ public:
 				pom->UstawOjca(w);
 				if(w->WezNastepny() != nullptr)
 					w->WezNastepny()->UstawOjca(w);
-
-				if (w->WezNastepny() != nullptr) cout << w->WezNastepny()->WezKlucz() << endl;
-				else cout << "-" << endl;
 			}
-			cout << "f" << endl;
 		}
 		if (w->WezOjca() == korzen && w->WezKlucz() < w->WezOjca()->WezKlucz())
 		{
@@ -106,9 +109,7 @@ public:
 				pom->UstawOjca(w);
 				if (w->WezPoprzedni() != nullptr)
 					w->WezPoprzedni()->UstawOjca(w);
-
-				if (w->WezNastepny() != nullptr) cout << w->WezNastepny()->WezKlucz() << endl;
-				else cout << "-" << endl;
+				
 			}
 			else if (w->WezOjca()->WezPoprzedni() == w)                            // jesli wezel jest lewym synem 
 			{
@@ -134,8 +135,7 @@ public:
 				if (w->WezNastepny() != nullptr)
 					w->WezNastepny()->UstawOjca(w);
 
-				if (w->WezNastepny() != nullptr) cout << w->WezNastepny()->WezKlucz() << endl;
-				else cout << "-" << endl;
+				
 			}
 		}
 	}
@@ -161,10 +161,26 @@ public:
 				{
 					if (najmniejszy == w->WezPoprzedni())
 					{
-						w->UstawNastepny(nullptr);
+						if (najmniejszy == ostatni)
+							ostatni = w;
 						najmniejszy->UstawPoprzedni(w);
+						najmniejszy->UstawNastepny(w->WezNastepny());
 						najmniejszy->UstawOjca(korzen);
+						w->UstawNastepny(nullptr);
 						w->UstawPoprzedni(nullptr);
+						w->UstawOjca(najmniejszy);
+						korzen = najmniejszy;
+					}
+					if (najmniejszy == w->WezNastepny())
+					{
+						if (najmniejszy == ostatni)
+							ostatni = w;
+						w->UstawNastepny(nullptr);
+						najmniejszy->UstawNastepny(w);
+						najmniejszy->UstawOjca(korzen);
+						najmniejszy->UstawPoprzedni(w->WezPoprzedni());
+						w->UstawPoprzedni(nullptr);
+						w->UstawNastepny(nullptr);
 						w->UstawOjca(najmniejszy);
 						korzen = najmniejszy;
 					}
@@ -195,6 +211,8 @@ public:
 						najmniejszy->WezNastepny()->UstawOjca(najmniejszy);
 					if (w == korzen)
 						korzen = najmniejszy;
+					if (najmniejszy == ostatni)
+						ostatni = w;
 					wDol(w);
 				}
 				else if (najmniejszy == w->WezNastepny())                                  // jesli wezel jest prawym synem
@@ -222,12 +240,14 @@ public:
 					w->UstawOjca(najmniejszy);
 					if (w == korzen)
 						korzen = najmniejszy;
+					if (najmniejszy == ostatni)
+						ostatni = w;
 					wDol(w);
 				}
 			}
 		}
 	}
-	void Dodaj(E* nowy,int droga)                                                          // dodaje wezel do kolejki
+	void Dodaj(Wierzcholek<Krawedz>* nowy,int droga)                                      // dodaje wierzcholek do kolejki
 	{
 		if (rozmiar < 3)
 		{
@@ -238,20 +258,22 @@ public:
 				w->UstawKlucz(droga);
 				w->UstawElement(nowy);
 				w->UstawOjca(korzen);
+				nowy->UstawPozycje(w);
 				ostatni = w;
 				++rozmiar;
 			}
-			else if (ostatni == korzen )                                                   // jesli ostatni wezel jest korzeniem
+			else if (ostatni == korzen)                                                   // jesli ostatni wezel jest korzeniem
 			{
 				Wezel<E>* w = new Wezel<E>;
 				korzen->UstawPoprzedni(w);
 				w->UstawKlucz(droga);
 				w->UstawOjca(korzen);
 				w->UstawElement(nowy);
+				nowy->UstawPozycje(w);
 				ostatni = w;
 				wGore(w);
 				++rozmiar;
-			}	
+			}
 			else if (ostatni == korzen->WezPoprzedni())
 			{
 				Wezel<E>* w = new Wezel<E>;
@@ -259,6 +281,7 @@ public:
 				w->UstawKlucz(droga);
 				w->UstawOjca(ostatni->WezOjca());
 				w->UstawElement(nowy);
+				nowy->UstawPozycje(w);
 				ostatni = w;
 				wGore(w);
 				++rozmiar;
@@ -271,6 +294,7 @@ public:
 			w->UstawKlucz(droga);
 			w->UstawOjca(ostatni->WezOjca());
 			w->UstawElement(nowy);
+			nowy->UstawPozycje(w);
 			ostatni = w;
 			wGore(w);
 			++rozmiar;
@@ -300,53 +324,63 @@ public:
 			w->UstawKlucz(droga);
 			w->UstawElement(nowy);
 			w->UstawOjca(ostatni);
+			nowy->UstawPozycje(w);
 			ostatni = w;
 			wGore(w);
 			++rozmiar;
 		}
-		cout << ostatni->WezKlucz() << " " << ostatni->WezOjca()->WezKlucz() << endl;
 	}
-	Wezel<E>* UsunMin()                       // zwraca wskaznik do najmniejszego elementu kolejki i usuwa go zniej
+	Wezel<E>* UsunMin()                       // zwraca wskaznik do najmniejszego elementu kolejki i usuwa go z niej
 	{
 		Wezel<E>* w;
 		w = korzen;
 		korzen = ostatni;
-		while (ostatni == ostatni->WezOjca()->WezPoprzedni())                                   // dopoki wezel jest lewym synem idz do ojca
+		if (rozmiar == 0)                                                         // jesli zostanie wywolane usuniecie elementu dla pustej kolejki
 		{
+			w = new Wezel<E>;
+			w->UstawKlucz(-1);
+			cout << "kolejka pusta, zwrocono element o kluczu -1" << endl;
+			return w;
+		}
+		while (ostatni == ostatni->WezOjca()->WezPoprzedni() && rozmiar > 2)      // dopoki wezel jest lewym synem idz do ojca
 			ostatni = ostatni->WezOjca();
-			if (ostatni == w)
-				break;
-		}
-		if (ostatni != w)                                                                      // jesli ojciec nie jest korzeniem
-			if (ostatni == ostatni->WezOjca()->WezNastepny())                                 // a wezel jest prawym synem idz do lewego syna
-			{
-				ostatni = ostatni->WezOjca()->WezPoprzedni();
-			}
-		while (ostatni->WezNastepny() != nullptr)                                             // dopoki wezel jest wewnetrzny idz do prawego syna
+		
+		if (ostatni != w && ostatni == ostatni->WezOjca()->WezNastepny())         // jesli wezel nie jest korzeniem i jest prawym synem idz do lewego syna
 		{
-			ostatni = ostatni->WezNastepny();
-		}
-		if (rozmiar == 3)
-			ostatni = w->WezNastepny();
-		if (rozmiar == 2)
-			ostatni = w->WezPoprzedni();
-		if (rozmiar == 1)
-			ostatni = w;
-		if (korzen == korzen->WezOjca()->WezNastepny())                                           // jesli ostatni wezel byl prawym synem
-			korzen->WezOjca()->UstawNastepny(nullptr);
-		else if (ostatni == korzen->WezOjca()->WezPoprzedni())
-			korzen->WezOjca()->UstawPoprzedni(nullptr);
+			ostatni = ostatni->WezOjca()->WezPoprzedni();
+			while (ostatni->WezNastepny() != nullptr)
+				ostatni = ostatni->WezNastepny();			
+		}		
+		
+		if (ostatni == w )                                                        // jesli wezel jest korzeniem, dopoki jest wewnetrzny idz do prawego syna
+			while(ostatni->WezNastepny()!=nullptr)
+				ostatni = ostatni->WezNastepny();
 
-		korzen->UstawPoprzedni(w->WezPoprzedni());                                           // wstawienie ostatniego wezla w miejsce korzenia
+		if (korzen->WezOjca()->WezNastepny() == korzen)                           // przeniesienie ostatniego wezla w miejsce korzenia
+			korzen->WezOjca()->UstawNastepny(nullptr);
+		else if (korzen->WezOjca()->WezPoprzedni())
+			korzen->WezOjca()->UstawPoprzedni(nullptr);
 		korzen->UstawNastepny(w->WezNastepny());
-		if(w->WezPoprzedni()!=nullptr)
-			korzen->WezPoprzedni()->UstawOjca(korzen);
-		if(w->WezNastepny()!=nullptr)
-			korzen->WezNastepny()->UstawOjca(korzen);
-		wDol(korzen);
+		korzen->UstawPoprzedni(w->WezPoprzedni());
+		korzen->UstawOjca(korzen);
+		if (w->WezNastepny() != nullptr)
+			w->WezNastepny()->UstawOjca(korzen);
+		if (w->WezPoprzedni() != nullptr)
+			w->WezPoprzedni()->UstawOjca(korzen);
+		if(w!=ostatni)
+			w->UstawOjca(nullptr);
+		w->UstawNastepny(nullptr);
+		w->UstawPoprzedni(nullptr);
+		wDol(korzen);                                                             // przeniesienie wezla w dol jesli klucz jest wiekszy niz ktoregos z synow
 		--rozmiar;
-		if (rozmiar == 0)
+		if (rozmiar == 1)                                                         // kiedy zostal jedynie korzen
 		{
+			korzen->UstawNastepny(nullptr);
+			korzen->UstawPoprzedni(nullptr);
+			ostatni = korzen;
+		}
+		if (rozmiar == 0)                                                         // kiedy kolejka jest pusta
+		{ 
 			korzen = nullptr;
 			ostatni = nullptr;
 		}

@@ -10,8 +10,8 @@ class GrafLista                               // graf zaimplementowany przez lis
 	Lista<Krawedz> krawedzie;                              // lista krawedzi
 	Lista<Wierzcholek<Krawedz>> wierzcholki;               // lista wierzcholkow
 public:
-	GrafLista() {  }
-	~GrafLista() {  }
+	GrafLista() { }
+	~GrafLista() { krawedzie.~Lista(); wierzcholki.~Lista(); }
 	Lista<Wierzcholek<Krawedz>>* Wierzcholki() { Lista<Wierzcholek<Krawedz>>* w = &wierzcholki; return w; }
 	Lista<Krawedz>* Krawedzie() { Lista<Krawedz>* w = &krawedzie; return w; }
 	void DodajWierzcholek(Wierzcholek<Krawedz>* w, int klucz)

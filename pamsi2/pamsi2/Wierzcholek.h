@@ -19,7 +19,12 @@ class Wierzcholek
 	int klucz;
 public:
 	Wierzcholek() { pole_wierzcholka = 0; klucz = 0; pozycja = nullptr; incydencje = nullptr; } //konstruktor
-	~Wierzcholek() { };
+	~Wierzcholek() 
+	{ 
+		if(incydencje!= nullptr)
+			while (!incydencje->Pusta()) 
+				incydencje->UsunWezel(); 
+	};
 	void UstawPozycje(Wezel<Wierzcholek>* w) { pozycja = w; }
 	void UstawPole(int p) { pole_wierzcholka = p; }                                             // "nazwa" wierzcholka
 	void UstawKlucz(int k) { klucz = k; }                                                       // przechowuje odleglosc 
