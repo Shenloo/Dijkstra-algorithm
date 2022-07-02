@@ -1,1 +1,3 @@
-# pamsi_projekt2
+# Dijkstra algorithm
+
+This repository contains implementations of Dijsktra algorithm.
